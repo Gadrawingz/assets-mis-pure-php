@@ -1,7 +1,11 @@
 <?php
+
 include ('scripts/queries_a.php');
 $assobj= new AssetQuery;
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -127,58 +131,40 @@ $assobj= new AssetQuery;
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
-                          <th>First name</th>
-                          <th>Progress</th>
-                          <th>Amount</th>
-                          <th>Status</th>
-                          <th>Deadline</th>
+                          <th>Asset ID</th>
+                          <th>Asset Name</th>
+                          <th>Asset Code</th>
+                          <th>Asset Type</th>
+                          <th>Location</th>
+                          <th>Depreciation</th>
                           <th colspan="2" class="text-centered">Action</th>
                         </tr>
                       </thead>
 
                       <?php
-                      /*
-                      $assobj= new AssetQuery;
-                      $stmt= $assobj->viewAllStuffs();
-                      while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { */ ?>
-                      ?>
+					  
+                      $obj= new AssetQuery;
+                      $stmt= $assobj->readAsset();
+                      while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
 
+                      ?>
+					  
                       <tbody>
                         <tr>
+                          <td><?php echo $row['a_id'];?></td>
+                          <td><?php echo $row['a_name'];?></td>
+                          <td><?php echo $row['a_code'];?></td>
+                          <td><?php echo $row['a_type'];?></td>
+                          <td><?php echo $row['a_location'];?></td>
+                          <td><?php echo $row['a_depreciation'];?></td>
                           <td></td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $ 77.99
-                          </td>
-                          <td><label class="badge badge-success">Active</label></td>
-                          <td>
-                            May 15, 2015
-                          </td>
-                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?ID=">Update</a></td>
-                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="hodhome.php?ID=">Delete</a></td>
+                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
+                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view_assets.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
                         </tr>
-
-                        <tr>
-                          <td>Mouse</td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>$245.30</td>
-                          <td><label class="badge badge-danger">Inactive</label></td>
-                          <td>July 1, 2015</td>
-
-                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?ID=<?php echo $row['id']; ?>">Update</a></td>
-                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="hodhome.php?ID=">Delete</a></td>
-                        </tr>
-                        
+						<?php } ?>
                       </tbody>
                     </table>
+					  
                   </div>
                 </div>
               </div>
@@ -186,24 +172,14 @@ $assobj= new AssetQuery;
         </div>
 
         <?php
-          if(isset($_POST['update'])){
-            $u=$x->update($_POST['id'], $_POST['name']);
-            if($u== '1'){
-              echo "<script>alert('DATA UPDATED!')</script>";
-              echo "<script>window.location='hodhome.php'</script>";
-            }else{
-              echo "<script>alert('NOT UPDATED')</script>";
-            }
-          }
-        }
 
-          if(isset($_POST['delete'])){
-            $u=$x->delete($_POST['id'], $_POST['name']);
-            if($u== '1'){
-              echo "<script>alert('Deleted successfully!')</script>";
-              echo "<script>window.location='hodhome.php'</script>";
-            }else{
+          if(isset($_GET['DID'])){
+            if($delete=$assobj->deleteAsset($_GET['DID'])=='1'){
               echo "<script>alert('Not deleted!')</script>";
+              echo "<script>window.location='view_assets.php'</script>";
+            }else{
+              echo "<script>alert('Deleted successfully!')</script>";
+              echo "<script>window.location='view_assets.php'</script>";
             }
           }
         ?>

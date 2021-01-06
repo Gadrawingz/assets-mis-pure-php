@@ -1,3 +1,16 @@
+<?php
+include ('scripts/queries_a.php');
+$obj= new AssetQuery;
+session_start();
+
+if(!isset($_SESSION['TUser'])) {
+  header("techhome.php");
+} else {
+  header("index.php?logintech");
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,17 +48,25 @@
 
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <span class="nav-profile-name">Technician</span>
+              <span class="nav-profile-name"><?php echo $_SESSION['TUser']; ?></span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item">
                 <i class="mdi mdi-settings text-primary"></i>
                 View profile
               </a>
-              <a class="dropdown-item">
+              <a class="dropdown-item" href="techhome.php?logout">
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
               </a>
+
+        <?php
+        if(isset($_GET['logout'])) {
+          session_destroy();
+          header("Location:index.php?loginhod");
+        }
+        ?>
+
             </div>
           </li>
         </ul>
@@ -60,19 +81,14 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
+
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#reg-asset" aria-expanded="false" aria-controls="reg-asset">
+            <a class="nav-link" href="addnew.php">
               <i class="mdi mdi-bookmark-plus-outline menu-icon"></i>
               <span class="menu-title">Register Asset</span>
-              <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="reg-asset">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_ele_asset">Electronic Assets </a></li>
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_nonel_asset">Non-Electronic</a></li>
-              </ul>
-            </div>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="view_assets.php">
               <i class="mdi mdi-receipt menu-icon"></i>
@@ -80,7 +96,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="techhome.php?transfer">
               <i class="mdi mdi-folder-move menu-icon"></i>
               <span class="menu-title">Transfer asset</span>
             </a>
@@ -146,7 +162,9 @@
 
                   <div class="tab-content py-0 px-0">
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-                      <div class="d-flex flex-wrap justify-content-xl-between">
+
+
+<!--                       <div class="d-flex flex-wrap justify-content-xl-between">
                         
                         <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
                           <i class="mdi mdi-laptop-windows mr-3 icon-lg text-primary"></i>
@@ -189,7 +207,89 @@
                           </div>
                         </div>
 
-                      </div>
+                      </div> -->
+
+
+
+
+
+
+
+
+
+
+
+             <?php
+            // Transfer
+            if(isset($_GET['transfer'])) {
+
+              if(isset($_POST['transbtn'])) {
+                if($obj->transferAsset($_POST['a_id'], $_POST['transfer_to'])) {
+              
+                echo "<script>alert('ASSET IS NOT TRANSFERED!')</script>";
+                echo "<script>window.location='techhome.php'</script>";
+              } else {
+                echo "<script>alert('ASSET IS TRANSFERED!')</script>";
+                echo "<script>window.location='techhome.php'</script>";
+                       
+              }
+              }
+/*
+              $st = $obj->readAssetById($_GET['UID']);
+              $row = $st->FETCH(PDO::FETCH_ASSOC);*/
+            ?>
+            <!-- Block1 -->
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Transfer Assets</h4>
+
+                  <form class="forms-sample" method="POST">
+                    <div class="form-group">
+                      <label for="selectFrom">Asset Name: </label>
+                      <select class="form-control" id="selectFrom" name="a_id">
+                      <?php
+                      $stmt= $obj->readAsset();
+                      while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
+                      ?>
+                        <option value="<?php echo $row['a_id'];?>"><?php echo $row['a_name'];?></option>
+                      <?php } ?>
+                      </select>
+                    </div>
+      
+                    <div class="form-group">
+                      <label for="selectTo">Transfer to:</label>
+
+                      <select class="form-control" id="selectFrom" name="transfer_to">
+                      <?php
+                      $stmt2= $obj->readLabs();
+                      while($torow= $stmt2->FETCH(PDO::FETCH_ASSOC)){ 
+                      ?>
+                        <option value="<?php echo $torow['lab_id'];?>"><?php echo $torow['lab_name'];?></option>
+                      <?php } ?>
+                      </select>
+
+                    </div>            
+                    <button type="submit" class="btn btn-primary mr-4" name="transbtn">Transfer</button>
+                    <button class="btn btn-danger">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <?php } ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
                     </div>
                     
                   </div>

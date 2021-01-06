@@ -1,3 +1,9 @@
+<?php
+
+include ('scripts/queries_a.php');
+$obj= new AssetQuery;
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -115,46 +121,72 @@
           <div class="row">
 
 
-            <?php  ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <?php
+            // Update assets
+            if(isset($_GET['uasset'])) {
+
+              if(isset($_POST['updsave'])) {
+                if($obj->updateAsset($_POST['aname'], $_POST['acode'], $_POST['atype'], $_POST['dep_date'], $_GET['UID'])=='1') {
+                 echo "<script>alert('ASSET IS NOT UPDATED!')</script>";
+                  echo "<script>window.location='view_assets.php'</script>";                  
+                  } else {
+                    echo "<script>alert('ASSET UPDATED!')</script>";
+                  echo "<script>window.location='view_assets.php'</script>";
+                  
+                }
+              }
+
+              $st = $obj->readAssetById($_GET['UID']);
+              $row = $st->FETCH(PDO::FETCH_ASSOC);
+            ?>
             <!-- Block1 -->
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Update form</h4>
-                  <form class="forms-sample">
+                  <h4 class="card-title">Update Assets</h4>
+                  <form class="forms-sample" method="POST">
                     <div class="form-group">
-                      <label for="exampleInputUsername1">Username</label>
-                      <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Username">
+                      <label for="exampleInputName">Asset name</label>
+                      <input type="text" class="form-control" id="exampleInputName" value="<?php echo $row['a_name'];?>" name="aname">
                     </div>
                     <div class="form-group">
-                      <label for="exampleInputEmail1">Email address</label>
-                      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                      <label for="exampleInputCode">Asset Code</label>
+                      <input type="text" class="form-control" id="exampleInputCode" name="acode" value="<?php echo $row['a_code'];?>">
                     </div>
                     <div class="form-group">
-                      <label for="exampleInputPassword1">Info 3</label>
-                      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                      <label for="exampleInputAtype">Asset Type</label>
+                      <input type="text" class="form-control" id="exampleInputAtype" value="<?php echo $row['a_type'];?>" name="atype">
                     </div>
                     <div class="form-group">
-                      <label for="exampleInputConfirmPassword1">Info 4</label>
-                      <input type="password" class="form-control" id="exampleInputConfirmPassword1" placeholder="Password">
+                      <label for="exampleInputDate">Depreciation Date</label>
+                      <input type="text" class="form-control" id="exampleInputDate" value="<?php echo $row['a_depreciation'];?>" name="dep_date">
                     </div>
                   
-                    <button type="submit" class="btn btn-primary mr-4">Submit</button>
+                    <button type="submit" class="btn btn-primary mr-4" name="updsave">Save</button>
                     <button class="btn btn-danger">Cancel</button>
                   </form>
                 </div>
               </div>
             </div>
-            <?php  ?>
+            <?php } ?>
             <!-- Block1 X -->
-
-
-
-            <!-- Block2 -->
-            <?php if(isset($_GET[''])) { ?>
-            
-            <!-- Block2X -->
-          <?php } ?>
 
 
 

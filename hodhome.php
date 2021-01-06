@@ -1,6 +1,14 @@
 <?php
 include ('scripts/queries_a.php');
 $obj= new AssetQuery;
+session_start();
+
+if(!isset($_SESSION['TUser'])) {
+	header("hodhome.php");
+} else {
+	header("index.php?loginhod");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -40,17 +48,24 @@ $obj= new AssetQuery;
 
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <span class="nav-profile-name">Loggedin as HOD</span>
+              <span class="nav-profile-name">Loggedin as <?php echo $_SESSION['Username']; ?></span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item">
                 <i class="mdi mdi-settings text-primary"></i>
                 View profile
               </a>
-              <a class="dropdown-item" href="superlogin.php">
+              <a class="dropdown-item" href="hodhome.php?logout">
                 <i class="mdi mdi-logout text-primary"></i>
                 Logout
               </a>
+			  
+			  <?php
+			  if(isset($_GET['logout'])) {
+				  session_destroy();
+				  header("Location:index.php?loginhod");
+			  }
+			  ?>
             </div>
           </li>
         </ul>
@@ -100,6 +115,7 @@ $obj= new AssetQuery;
                 <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 2</a></li>
                 <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 3</a></li>
                 <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 4</a></li>
+                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 5</a></li>
               </ul>
             </div>
           </li>
@@ -128,7 +144,7 @@ $obj= new AssetQuery;
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-end flex-wrap">
                   <div class="mr-md-3 mr-xl-5">
-                    <h2>Welcome back,</h2>
+                    <h2>Welcome <?php echo $_SESSION['Username']; ?>,</h2>
                     <p class="mb-md-0">In this dashboard you control info from labs</p>
                   </div>
 

@@ -1,3 +1,10 @@
+<?php
+
+include ('scripts/queries_a.php');
+$obj= new AssetQuery;
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -115,19 +122,31 @@
           <div class="row">
 
 
-            <?php if(isset($_GET['add_ele_asset'])) { ?>
-            <!-- Block1 -->
+      <?php
+			if(isset($_POST['save_asset'])) {
+				if($obj->addAsset($_POST['asset_name'], $_POST['asset_code'], $_POST['asset_type'], $_POST['a_location'], $_POST['depreciation'])==1) {
+					echo "<script>alert('ASSET ADDED!')</script>";
+				    echo "<script>window.location='addnew.php'</script>";
+				} else {
+					echo "<script>alert('ASSET IS NOT ADDED!')</script>";
+					echo "<script>window.location='addnew.php'</script>";
+				}					
+			}
+			
+			
+			?>
+            <!-- Block Xa -->
             <div class="col-12 grid-margin">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Register Electronic asset</h4>
-                  <form class="form-sample">
+                  <h4 class="card-title">Register new asset</h4>
+                  <form class="form-sample" method="POST">
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Name</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="asset_name"/>
                           </div>
                         </div>
                       </div>
@@ -135,7 +154,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Code</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="asset_code"/>
                           </div>
                         </div>
                       </div>
@@ -143,131 +162,45 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Status</label>
+                          <label class="col-sm-3 col-form-label">Asset Type</label>
                           <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Active</option>
-                              <option>Inactive</option>
+                            <select class="form-control" name="asset_type">
+                              <option value="Electronic">Electronic</option>
+                              <option value="Electronic">Non-Electronic</option>
                             </select>
                           </div>
                         </div>
                       </div>
+					  
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
+                          <label class="col-sm-3 col-form-label">Asset Location</label>
                           <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
+                            <input class="form-control" type="text" name="a_location"/>
                           </div>
                         </div>
                       </div>
+					  
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Depreciation</label>
+                          <div class="col-sm-9">
+                            <input class="form-control" type="text" name="depreciation"/>
+                          </div>
+                        </div>
+                      </div>
+					  
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Which Lab</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Lab 1</option>
-                              <option>Lab 2</option>
-                              <option>Lab 3</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Save</button>
+
+                    <button type="submit" class="btn btn-primary mb-2" name="save_asset">Save</button>
                   </form>
                 </div>
               </div>
             </div>
-            <?php } ?>
             <!-- Block X -->
 
 
 
-            <!-- Block1 -->
-            <?php if(isset($_GET['add_nonel_asset'])) { ?>
-            <div class="col-12 grid-margin">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Register non-electronic asset</h4>
-                  <form class="form-sample">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Name</label>
-                          <div class="col-sm-9">
-                            <input type="text" class="form-control" />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Code</label>
-                          <div class="col-sm-9">
-                            <input type="text" class="form-control" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Status</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Active</option>
-                              <option>Inactive</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Which Lab</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Lab 1</option>
-                              <option>Lab 2</option>
-                              <option>Lab 3</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Save</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <!-- Block 2X -->
-          <?php } ?>
 
 
 
