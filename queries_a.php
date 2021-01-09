@@ -17,8 +17,8 @@ class AssetQuery{
 		return $count;
 	}
 	
-	public function adminLogin($uname, $pass){
-		$sql= "SELECT * FROM admin WHERE username='".$uname."'&&password='".$pass."'";
+	public function adminLogin(){
+		$sql= "SELECT * FROM admin WHERE username='".$_POST['username']."'&& password='".$_POST['username']."'";
 		$stmt=$this->dbconn->prepare($sql);
 		$stmt->execute();
 		return $stmt;
@@ -44,6 +44,7 @@ class AssetQuery{
 	}	
 	
 	
+
 	public function addAsset($aname, $acode, $atype, $alocation, $deprec) {
 		$sql= "INSERT INTO asset VALUES (null, '".$aname."', '".$acode."', '".$atype."', '".$alocation."', '".$deprec."')";
 		$query= $this->dbconn->prepare($sql);
@@ -51,7 +52,7 @@ class AssetQuery{
 		$count= $query->rowCount();
 	}
 
-    public function readAssetById($aid){
+    public function readOneAsset($aid){
 		$query= $this->dbconn->prepare("SELECT * FROM asset WHERE a_id='".$aid."' ");
 		$query->execute();
 		return $query;
@@ -70,7 +71,6 @@ class AssetQuery{
 		$count= $query->rowCount();
 	}
 
-
 	public function transferAsset($aid, $location) {
 		$sql= "UPDATE asset SET a_location='".$location."' WHERE a_id='".$aid."' ";
 		$query= $this->dbconn->prepare($sql);
@@ -78,22 +78,73 @@ class AssetQuery{
 		$count= $query->rowCount();
 	}
 
-	
     public function readAsset(){
-		$query= $this->dbconn->prepare("SELECT * FROM asset");
+		$query= $this->dbconn->prepare("SELECT * FROM asset ");
+		$query->execute();
+		return $query;
+	}
+
+    public function readAssetLoc($lab){
+		$query= $this->dbconn->prepare("SELECT * FROM asset WHERE a_location='$lab' ");
 		$query->execute();
 		return $query;
 	}	
+
+
+
+
+	public function addLab($lname, $uid) {
+		$sql= "INSERT INTO labs VALUES (null, '".$lname."', '".$uid."')";
+		$query= $this->dbconn->prepare($sql);
+		$query->execute();
+		$count= $query->rowCount();
+	}
+
+    public function readOneLab($uid){
+		$query= $this->dbconn->prepare("SELECT * FROM labs WHERE lab_tech='".$uid."'");
+		$query->execute();
+		return $query;
+	}
 				
     public function readLabs(){
 		$query= $this->dbconn->prepare("SELECT * FROM labs");
 		$query->execute();
 		return $query;
 	}
+
 	
-	
-	
-	
+
+
+	public function addUser($names, $username, $phone, $email, $upass) {
+		$sql= "INSERT INTO user VALUES (null, '".$names."', '".$username."', '".$phone."', '".$email."', '".$upass."')";
+		$query= $this->dbconn->prepare($sql);
+		$query->execute();
+		$count= $query->rowCount();
+	}
+    public function readUsers(){
+		$query= $this->dbconn->prepare("SELECT * FROM user");
+		$query->execute();
+		return $query;
+	}
+
+    public function deleteUser($uid){
+		$query= $this->dbconn->prepare("DELETE FROM user WHERE u_id='".$uid."' ");
+		$query->execute();
+		return $query;
+	}
+
+    public function readOneUser($uid){
+		$query= $this->dbconn->prepare("SELECT * FROM user WHERE u_id='".$uid."' ");
+		$query->execute();
+		return $query;
+	}
+
+	public function updateUser($names, $uname, $ph, $email, $pass, $uid) {
+		$sql= "UPDATE user SET u_names ='".$names."', u_username='".$uname."', u_phone='".$ph."', u_email='".$email."' u_password= '".$pass."' WHERE u_id='".$uid."' ";
+		$query= $this->dbconn->prepare($sql);
+		$query->execute();
+		$count= $query->rowCount();
+	}	
 		
 
 
@@ -118,6 +169,11 @@ class AssetQuery{
 		$c= $query->rowCount();
 		return $c;
 	}
-}
 
+
+
+
+
+
+}
 ?>
