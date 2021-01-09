@@ -1,4 +1,5 @@
 <?php
+session_start();
 include ('scripts/queries_a.php');
 $obj= new AssetQuery;
 ?>
@@ -55,7 +56,7 @@ $obj= new AssetQuery;
           <li class="nav-item">
             <a class="nav-link" href="index.php?logintech">
               <i class="mdi mdi-laptop menu-icon"></i>
-              <span class="menu-title">LabTech Login</span>
+              <span class="menu-title">Lab Technician</span>
             </a>
           </li>
 
@@ -86,14 +87,21 @@ $obj= new AssetQuery;
             $stmt = $obj->techLogin($_POST['t_email'], $_POST['t_password']);
             $row = $stmt->FETCH(PDO::FETCH_ASSOC);
 
-            if($_POST['t_email']==$row['u_email'] && $_POST['t_password']==$row['u_password']) {
-              session_start();
+              // Checking labx
+              $stmt5 = $obj->readOneLab($row['u_id']);
+              $row5 = $stmt5->FETCH(PDO::FETCH_ASSOC);
+              
               $_SESSION['TUser'] = $row['u_names'];
+              $_SESSION['u_id'] = $row['u_id'];
+              $_SESSION['TLab'] = $row5['lab_tech'];
+
+            if($_POST['t_email']==$row['u_email'] && $_POST['t_lab']== $_SESSION['TLab'] && $_POST['t_password']==$row['u_password']) {
+
         
               echo "Welcome, ".$_SESSION['TUser'];
               header("Location: techhome.php");
               } else {
-              echo "<script>alert('LOGIN FAILED!')</script>";
+              echo "<script>alert('USERNAME, PASSWORD AND LAB ARE NOT MATCHING')</script>";
               echo "<script>window.location='index.php?logintech'</script>";       
             }
           }
@@ -119,13 +127,15 @@ $obj= new AssetQuery;
                     <div class="form-group row">
                     	<label for="exampleFormControlSelect" class="col-sm-3 col-form-label">Select Lab</label>
                     	<div class="col-sm-9">
-                    	<select class="form-control form-control" id="exampleFormControlSelect" name="t_lab">
-                    		<option>Lab 1</option>
-                    		<option>Lab 2</option>
-                    		<option>Lab 3</option>
-                    		<option>Lab 4</option>
-                    		<option>Lab 5</option>
-                    	</select>
+                        <select class="form-control" id="selectFrom" name="t_lab">
+                          <?php
+                            $stmt= $obj->readLabs();
+                            while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
+                          ?>
+
+                          <option value="<?php echo $row['lab_id'];?>"><?php echo $row['lab_name'];?></option>
+                          <?php } ?>
+                        </select>
                     </div>
                     </div>
 
@@ -163,14 +173,13 @@ $obj= new AssetQuery;
 		<?php if(isset($_GET['loginhod'])) { 
 		
 		if(isset($_POST['hlogin'])) {
-			$stmt = $obj->adminLogin($_POST['username'], $_POST['password']);
+			$stmt = $obj->adminLogin();
 			$row = $stmt->FETCH(PDO::FETCH_ASSOC);
 			
 			if($_POST['username']==$row['username'] && $_POST['password']==$row['password']) {
-				session_start();
-				$_SESSION['Username'] = $row['username'];
 				
-				echo "Welcome, ".$_SESSION['Username'];
+        $_SESSION['Admin'] = $row['username'];
+				echo "Welcome, ".$_SESSION['Admin'];
 				header("Location: hodhome.php");
 			} else {
 				echo "<script>alert('LOGIN FAILED!')</script>";
