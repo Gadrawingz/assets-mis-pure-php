@@ -48,28 +48,31 @@ $obj= new AssetQuery;
     </nav>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_sidebar.html -->
+      
+
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
-          
           <li class="nav-item">
-            <a class="nav-link" href="index.php?logintech">
+            <div class="nav-link" href="index.php?login">
+              <span class="menu-title">&nbsp;&darr;&nbsp;</span>
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="index.php?login">
               <i class="mdi mdi-laptop menu-icon"></i>
-              <span class="menu-title">Lab Technician</span>
+              <span class="menu-title">System Login</span>
             </a>
           </li>
-
-          <li class="nav-item nav-link"><br></li>
 
           <li class="nav-item">
-            <a class="nav-link" href="index.php?loginhod">
-              <i class="mdi mdi-library-books menu-icon"></i>
-              <span class="menu-title">H.O.D Login</span>
-            </a>
+            <div class="nav-link" href="index.php?login">
+              <span class="menu-title">&nbsp;&uarr;&nbsp;</span>
+            </div>
           </li>
+
         </ul>
-          
       </nav>
 
 
@@ -81,29 +84,40 @@ $obj= new AssetQuery;
 		
 		
 		
-				<?php if(isset($_GET['logintech'])) { 
+				<?php if(isset($_GET['login'])) { 
 
-          if(isset($_POST['tlogin'])) {
-            $stmt = $obj->techLogin($_POST['t_email'], $_POST['t_password']);
+          if(isset($_POST['btnlogin'])) {
+            $stmt = $obj->userLogin($_POST['u_email'], $_POST['u_type'], $_POST['u_pass']);
             $row = $stmt->FETCH(PDO::FETCH_ASSOC);
 
-              // Checking labx
-              $stmt5 = $obj->readOneLab($row['u_id']);
-              $row5 = $stmt5->FETCH(PDO::FETCH_ASSOC);
-              
-              $_SESSION['TUser'] = $row['u_names'];
-              $_SESSION['u_id'] = $row['u_id'];
-              $_SESSION['TLab'] = $row5['lab_tech'];
 
-            if($_POST['t_email']==$row['u_email'] && $_POST['t_lab']== $_SESSION['TLab'] && $_POST['t_password']==$row['u_password']) {
+            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $_POST['u_type']==$row['user_type'] && $_POST['u_type']=='Admin') {
 
-        
-              echo "Welcome, ".$_SESSION['TUser'];
-              header("Location: techhome.php");
+                $_SESSION['Admin'] = $row['u_names'];
+                $_SESSION['u_id'] = $row['u_id'];
+                header("Location: hodhome.php?welcome");
               } else {
-              echo "<script>alert('USERNAME, PASSWORD AND LAB ARE NOT MATCHING')</script>";
-              echo "<script>window.location='index.php?logintech'</script>";       
+              echo "<script>alert('USERNAME AND PASSWORD ARE NOT MATCHING')</script>";
+
+              echo "<script>window.location='index.php?login'</script>";       
             }
+
+
+            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $_POST['u_type']==$row['user_type'] && $_POST['u_type']=='LabTech') {
+
+                // Checking labx
+                $stmt5 = $obj->readOneLab($row['u_id']);
+                $row5 = $stmt5->FETCH(PDO::FETCH_ASSOC);
+
+                $_SESSION['TUser'] = $row['u_names'];
+                $_SESSION['u_id'] = $row['u_id'];
+                $_SESSION['TLab'] = $row5['lab_tech'];
+                header("Location: techhome.php?welcome");
+              } else {
+              echo "<script>alert('USERNAME AND PASSWORD ARE NOT MATCHING')</script>";
+              echo "<script>window.location='index.php?login'</script>";       
+            }
+
           }
 
         ?>
@@ -112,29 +126,24 @@ $obj= new AssetQuery;
           <div class="col-lg-6 mx-auto">
             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
               <div class="brand-logo">
-                <h2>Lab technician Login</h2>
+                <h2>Login for all users </h2>
               </div>
 
 
-              	<form class="pt-3" method="POST">
+                <form class="pt-3" method="POST">
                     <div class="form-group row">
-                        <label for="exampleInputMail" class="col-sm-3 col-form-label">Email</label>
+                        <label for="exampleInputUsername" class="col-sm-3 col-form-label">Email</label>
                       <div class="col-sm-9">
-                        <input type="email" class="form-control" id="exampleInputMail" placeholder="Email" name="t_email">
+                        <input type="email" class="form-control" id="exampleInputUsername" placeholder="Email address" name="u_email">
                       </div>
                     </div>
 
                     <div class="form-group row">
-                    	<label for="exampleFormControlSelect" class="col-sm-3 col-form-label">Select Lab</label>
-                    	<div class="col-sm-9">
-                        <select class="form-control" id="selectFrom" name="t_lab">
-                          <?php
-                            $stmt= $obj->readLabs();
-                            while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
-                          ?>
-
-                          <option value="<?php echo $row['lab_id'];?>"><?php echo $row['lab_name'];?></option>
-                          <?php } ?>
+                      <label for="exampleFormControlSelect" class="col-sm-3 col-form-label">User type</label>
+                      <div class="col-sm-9">
+                        <select class="form-control" id="selectFrom" name="u_type">
+                          <option value="Admin">Admin</option>
+                          <option value="LabTech">LabTech</option>
                         </select>
                     </div>
                     </div>
@@ -142,113 +151,33 @@ $obj= new AssetQuery;
                     <div class="form-group row">
                       <label for="exampleInputPassword2" class="col-sm-3 col-form-label">Password</label>
                       <div class="col-sm-9">
-                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="t_password">
+                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="u_pass">
                       </div>
                     </div>
                     
-                     <div class="mt-3">
-                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit" name="tlogin">LOG IN</button>
+                    <div class="mt-3">
+                      <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit" name="btnlogin">LOG IN</button>
+                    </div>
+
+                    <div class="my-2 d-flex justify-content-between align-items-center">
+                      <div class="form-check">
+                        <label class="form-check-label text-muted">
+                          <input type="checkbox" class="form-check-input">
+                          Keep me signed in
+                        </label>
+                      </div>
+                      <a href="forgotpass.php" class="auth-link text-black">Forgot password?</a>
+                    </div>
+                  </form>
                 </div>
-                <div class="my-2 d-flex justify-content-between align-items-center">
-                  <div class="form-check">
-                    <label class="form-check-label text-muted">
-                      <input type="checkbox" class="form-check-input">
-                      Keep me signed in
-                    </label>
-                  </div>
-                  <a href="forgotpass.php" class="auth-link text-black">Forgot password?</a>
-                </div>
-                </form>
-            </div>
-			
-          </div>
-        </div>
-		<?php } ?>
-		
-		
-		
-		
-		
-		
-		<?php if(isset($_GET['loginhod'])) { 
-		
-		if(isset($_POST['hlogin'])) {
-			$stmt = $obj->adminLogin();
-			$row = $stmt->FETCH(PDO::FETCH_ASSOC);
-			
-			if($_POST['username']==$row['username'] && $_POST['password']==$row['password']) {
-				
-        $_SESSION['Admin'] = $row['username'];
-				echo "Welcome, ".$_SESSION['Admin'];
-				header("Location: hodhome.php");
-			} else {
-				echo "<script>alert('LOGIN FAILED!')</script>";
-				echo "<script>window.location='index.php?loginhod'</script>";				
-			}
-		}
-
-
-
-		?>
-		<div class="content-wrapper d-flex align-items-center auth px-0">
-          <div class="col-lg-6 mx-auto">
-            <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-              <div class="brand-logo">
-                <h2>H.o.D Login</h2>
               </div>
-              	<form class="pt-3" method="POST">
-                    <div class="form-group row">
-                        <label for="exampleInputUsername" class="col-sm-3 col-form-label">Username</label>
-                      <div class="col-sm-9">
-                        <input type="text" class="form-control" id="exampleInputUsername" placeholder="Username" name="username">
-                      </div>
-                    </div>
-
-
-                    <div class="form-group row">
-                      <label for="exampleInputPassword2" class="col-sm-3 col-form-label">Password</label>
-                      <div class="col-sm-9">
-                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="password">
-                      </div>
-                    </div>
-                    
-                     <div class="mt-3">
-                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" type="submit" name="hlogin">LOG IN</button>
-                </div>
-                <div class="my-2 d-flex justify-content-between align-items-center">
-                  <div class="form-check">
-                    <label class="form-check-label text-muted">
-                      <input type="checkbox" class="form-check-input">
-                      Keep me signed in
-                    </label>
-                  </div>
-				  
-				  <?php if($obj->countAdmins() < 1) { ?>
-                  <a href="add_admin.php" class="auth-link text-primary">Create account</a>
-				  
-				  <?php } else { ?>
-				  <a href="forgotpass.php" class="auth-link text-danger">Forgot password</a>
-				  <?php } ?>
-                </div>
-                </form>
             </div>
-			
-          </div>
-        </div>
-		<?php } ?>
+		    <?php } ?>
 		
 		
-		
-		
-		
+	
 
         </div>
-
-
-
-
-
-
 
 
         <!-- Footer -->

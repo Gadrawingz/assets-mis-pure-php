@@ -2,7 +2,7 @@
 session_start();
 include ('scripts/queries_a.php');
 $assobj= new AssetQuery;
-$locat = $_SESSION['TLab'];
+$locat = $_SESSION['Admin'];
 ?>
 
 
@@ -37,11 +37,12 @@ $locat = $_SESSION['TLab'];
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
         
-        <?php include('scripts/nav_menus.php'); ?>
+        <?php include('scripts/nav_admin.php'); ?>
 
 
 
-      <?php if(isset($_GET['a'])) { ?>
+
+      <?php if(isset($_GET['hod_a'])) { ?>
       <!-- Container -->
       <div class="main-panel">        
         <div class="content-wrapper">
@@ -65,10 +66,10 @@ $locat = $_SESSION['TLab'];
                       </thead>
 
                       <?php
-                      $stmt= $assobj->readAssetLoc($locat);
+                      $stmt= $assobj->readAsset();
                       while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
-					  
+            
                       <tbody>
                         <tr>
                           <td><?php echo $row['a_id'];?></td>
@@ -104,19 +105,7 @@ $locat = $_SESSION['TLab'];
             </div>
         </div>
 
-        <?php
-          if(isset($_GET['DID'])){
-            if($delete=$assobj->deleteAsset($_GET['DID'])=='1'){
-              echo "<script>alert('Not deleted!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
-            }else{
-              echo "<script>alert('Deleted successfully!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
-            }
-          }
-
-        } // end for getfx
-        ?>
+        <?php } ?>
 
 
 
@@ -124,57 +113,138 @@ $locat = $_SESSION['TLab'];
 
 
 
-      <?php if(isset($_GET['vborrow'])) { ?>
+
+
+
+
+
+
+
+
+      <?php if(isset($_GET['labinfo'])) { ?>
       <!-- Container -->
       <div class="main-panel">        
         <div class="content-wrapper">
           <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">All borrowed assets</h4>
+                <h4 class="card-title">All information about Lab <?php echo $_GET['labinfo']; ?></h4>
                   <div class="table-responsive">
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
                           <th>Asset ID</th>
                           <th>Asset Name</th>
-                          <th>Asset From:</th>
-                          <th>Borrowed to</th>
-                          <th>Date</th>
+                          <th>Asset Code</th>
+                          <th>Asset Type</th>
+                          <th>Location</th>
+                          <th>Asset Model</th>
+                          <th>Status</th>
+                          <th>Condition</th>
+                          <th colspan="2" style="text-align: center;">Action</th>
                         </tr>
                       </thead>
+
                       <?php
-                      $stmt= $assobj->readBorrowedAssets($locat);
+                      $stmt= $assobj->readAssetLoc($_GET['labinfo']);
                       while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
             
                       <tbody>
                         <tr>
-                          <td><?php echo $row['bor_id'];?></td>
-                          <td>
-                            <?php
-                            $astmt= $assobj->readOneAsset($row['asset_id']);
-                            $arow= $astmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $arow['a_name'];
-                            ?>
-                          </td>
+                          <td><?php echo $row['a_id'];?></td>
+                          <td><?php echo $row['a_name'];?></td>
+                          <td><?php echo $row['a_code'];?></td>
 
                           <td>
                             <?php
-                            $bstmt= $assobj->read_lab_ch_id($row['bor_from']);
-                            $brow= $bstmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $brow['lab_name'];
+                            $stmt7= $assobj->readOneAType($row['a_type']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            echo $row7['cat_type'];
                             ?>
                           </td>
+                          <td>Lab #<?php echo $row['a_location']; ?></td>
 
                           <td>
                             <?php
-                            $btstmt= $assobj->read_lab_ch_id($row['bor_to']);
-                            $btrow= $btstmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $btrow['lab_name'];
+                            $stmt8= $assobj->readOneModel($row['a_model']);
+                            $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
+                            echo $row8['m_name'];
                             ?>
-                          </td>
-                          <td><?php echo $row['bor_date'];?></td>
+                          </td>                          
+                          <td><?php echo $row['a_status'];?></td>
+                          <td><?php echo $row['a_condition'];?></td>
+                          <td></td>
+                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
+                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view_assets.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
+                        </tr>
+                      <?php } ?>
+                        <?php
+                        if($assobj->count_asset_byloc($_GET['labinfo'])<=0) {
+                          echo "<tbody><tr>
+                          <td colspan='11' style='color: red;'><center>No record found!</center></td></tr></tbody>";
+                        } ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <?php } ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <?php if(isset($_GET['alltch'])) { ?>
+      <!-- Container -->
+      <div class="main-panel">        
+        <div class="content-wrapper">
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">All Lab Technicians</h4>
+                  <div class="table-responsive pt-3">
+                    <table class="table bordered table-dark">
+
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Names</th>
+                          <th>Username</th>
+                          <th>Phone</th>
+                          <th>Email address</th>
+                          <th>Password</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+
+                      <?php
+                      $obj= new AssetQuery;
+                      $stmt2= $assobj->readUsers();
+                      while($row2= $stmt2->FETCH(PDO::FETCH_ASSOC)){ 
+                      ?>
+            
+                      <tbody>
+                        <tr>
+                          <td><?php echo $row2['u_id'];?></td>
+                          <td><?php echo $row2['u_names'];?></td>
+                          <td><?php echo $row2['u_username'];?></td>
+                          <td><?php echo $row2['u_phone'];?></td>
+                          <td><?php echo $row2['u_email'];?></td>
+                          <td><?php echo $row2['u_password'];?></td>                          
+                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view4admin.php?alltch&DDID=<?php echo $row2['u_id'];?>">Delete</a></td>
                         </tr>
                       <?php } ?>
                       </tbody>
@@ -186,19 +256,18 @@ $locat = $_SESSION['TLab'];
         </div>
 
         <?php
-          if(isset($_GET['DID'])){
-            if($delete=$assobj->deleteAsset($_GET['DID'])=='1'){
+          if(isset($_GET['DDID'])){
+            if($assobj->deleteUser($_GET['DDID'])=='1'){
               echo "<script>alert('Not deleted!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
+              echo "<script>window.location='view4admin.php?alltch'</script>";
             }else{
               echo "<script>alert('Deleted successfully!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
+              echo "<script>window.location='view4admin.php?alltch'</script>";
             }
           }
 
         } // end for getfx
         ?>
-
 
 
 

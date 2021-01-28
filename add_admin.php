@@ -36,14 +36,17 @@ $obj= new AssetQuery;
 
 			if(isset($_POST['add_admin'])) {
 				if($obj->countAdmins() < 1) {	
-				if($obj->regAdmin($_POST['names'], $_POST['username'], $_POST['email'], $_POST['password'])) {
-					echo "<script>alert('ADMIN CREATED!')</script>";
-					echo "<script>window.location='index.php?loginhod'</script>";
+				if($obj->regAdmin($_POST['names'], $_POST['username'], $_POST['phone'], $_POST['email'], $_POST['password'])) {
+					echo "<script>alert('ADMIN IS CREATED!')</script>";
+					echo "<script>window.location='index.php?login'</script>";
 				} 
 			} else {
-  					
+          echo "<script>alert('ADMIN IS NOT CREATED!')</script>";
+          echo "<script>window.location='index.php?login'</script>"; 					
 				}
 			}
+
+
 			?>			
 			  
                 <form class="pt-3" method="POST">
@@ -57,9 +60,15 @@ $obj= new AssetQuery;
                     <input type="text" class="form-control" id="exampleInputUsername" placeholder="Username" name="username">
                   </div>
 				  
+
+          <div class="form-group">
+                    <label for="exampleInput4ne">Your Phone</label>
+                    <input type="text" class="form-control" id="exampleInput4ne" placeholder="Phone..." name="phone">
+                  </div>
+
 				  <div class="form-group">
                     <label for="exampleInputEmail">Your Email</label>
-                    <input type="email" class="form-control" id="exampleInputEmail" placeholder="Email"  name="email">
+                    <input type="email" class="form-control" id="exampleInputEmail" placeholder="Email" name="email">
                   </div>
 
 				  <div class="form-group">

@@ -13,7 +13,7 @@ $locat = $_SESSION['TLab'];
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>View Assets accordingly</title>
+  <title>Technician Reports</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
@@ -40,16 +40,57 @@ $locat = $_SESSION['TLab'];
         <?php include('scripts/nav_menus.php'); ?>
 
 
-
-      <?php if(isset($_GET['a'])) { ?>
       <!-- Container -->
       <div class="main-panel">        
         <div class="content-wrapper">
           <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">All assets</h4>
-                  <div class="table-responsive">
+
+
+
+
+                <!-- Simple Overview for raport -->
+                <div class="card-body dashboard-tabs p-0">
+                  <ul class="nav nav-tabs px-4" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Report Overview</a>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content py-0 px-0">
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                      <div class="d-flex flex-wrap justify-content-xl-between">
+                        
+                        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
+                          <i class="mdi mdi-laptop-windows mr-3 icon-lg text-primary"></i>
+                          <div class="d-flex flex-column justify-content-around">
+                            <small class="mb-1 text-muted">Total Assets</small>
+                            <h5 class="mr-2 mb-0"><center><?php echo $assobj->count_assets($locat); ?></center></h5>
+                          </div>
+                        </div>
+
+
+                        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
+                          <i class="mdi mdi-laptop-windows mr-3 icon-lg text-primary"></i>
+                          <div class="d-flex flex-column justify-content-around">
+                            <small class="mb-1 text-muted">Active assets</small>
+                            <h5 class="mr-2 mb-0"><center><?php echo $assobj->count_active($locat); ?></center></h5>
+                          </div>
+                        </div>
+
+                        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
+                          <i class="mdi mdi-laptop-windows mr-3 icon-lg text-primary"></i>
+                          <div class="d-flex flex-column justify-content-around">
+                            <small class="mb-1 text-muted">Inactive Assets</small>
+                            <h5 class="mr-2 mb-0"><center><?php echo $assobj->count_inactive($locat); ?></center></h5>
+                          </div>
+                        </div>
+
+
+
+                  <div class="table-responsive"><br><br>
+                    <h3 class="card-title">Active assets</h3>
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
@@ -65,7 +106,7 @@ $locat = $_SESSION['TLab'];
                       </thead>
 
                       <?php
-                      $stmt= $assobj->readAssetLoc($locat);
+                      $stmt= $assobj->readAssetIsActive($locat);
                       while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
 					  
@@ -93,94 +134,98 @@ $locat = $_SESSION['TLab'];
                           <td><?php echo $row['a_condition'];?></td>
                           <td></td>
                           <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
-                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view_assets.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
+                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="techreport.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
                         </tr>
                       <?php } ?>
                       </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
-
-        <?php
-          if(isset($_GET['DID'])){
-            if($delete=$assobj->deleteAsset($_GET['DID'])=='1'){
-              echo "<script>alert('Not deleted!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
-            }else{
-              echo "<script>alert('Deleted successfully!')</script>";
-              echo "<script>window.location='view_assets.php'</script>";
-            }
-          }
-
-        } // end for getfx
-        ?>
+                    </table><br><br>
 
 
-
-
-
-
-
-      <?php if(isset($_GET['vborrow'])) { ?>
-      <!-- Container -->
-      <div class="main-panel">        
-        <div class="content-wrapper">
-          <div class="col-md-12 grid-margin stretch-card">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">All borrowed assets</h4>
-                  <div class="table-responsive">
+                    <h3 class="card-title">Inactive assets</h3>
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
                           <th>Asset ID</th>
                           <th>Asset Name</th>
-                          <th>Asset From:</th>
-                          <th>Borrowed to</th>
-                          <th>Date</th>
+                          <th>Asset Code</th>
+                          <th>Asset Type</th>
+                          <th>Asset Model</th>
+                          <th>Status</th>
+                          <th>Condition</th>
+                          <th colspan="2" style="text-align: center;">Action</th>
                         </tr>
                       </thead>
+
                       <?php
-                      $stmt= $assobj->readBorrowedAssets($locat);
+                      $stmt= $assobj->readAssetIsInactive($locat);
                       while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
             
                       <tbody>
                         <tr>
-                          <td><?php echo $row['bor_id'];?></td>
+                          <td><?php echo $row['a_id'];?></td>
+                          <td><?php echo $row['a_name'];?></td>
+                          <td><?php echo $row['a_code'];?></td>
                           <td>
                             <?php
-                            $astmt= $assobj->readOneAsset($row['asset_id']);
-                            $arow= $astmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $arow['a_name'];
+                            $stmt7= $assobj->readOneAType($row['a_type']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            echo $row7['cat_type'];
                             ?>
                           </td>
 
                           <td>
                             <?php
-                            $bstmt= $assobj->read_lab_ch_id($row['bor_from']);
-                            $brow= $bstmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $brow['lab_name'];
+                            $stmt8= $assobj->readOneModel($row['a_model']);
+                            $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
+                            echo $row8['m_name'];
                             ?>
-                          </td>
-
-                          <td>
-                            <?php
-                            $btstmt= $assobj->read_lab_ch_id($row['bor_to']);
-                            $btrow= $btstmt->FETCH(PDO::FETCH_ASSOC);
-                            echo $btrow['lab_name'];
-                            ?>
-                          </td>
-                          <td><?php echo $row['bor_date'];?></td>
+                          </td>                          
+                          <td><?php echo $row['a_status'];?></td>
+                          <td><?php echo $row['a_condition'];?></td>
+                          <td></td>
+                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
+                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="techreport.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
                         </tr>
                       <?php } ?>
                       </tbody>
                     </table>
+
+
                   </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               </div>
             </div>
         </div>
@@ -195,13 +240,7 @@ $locat = $_SESSION['TLab'];
               echo "<script>window.location='view_assets.php'</script>";
             }
           }
-
-        } // end for getfx
         ?>
-
-
-
-
 
 
 

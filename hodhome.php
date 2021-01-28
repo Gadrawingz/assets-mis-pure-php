@@ -3,10 +3,8 @@ include ('scripts/queries_a.php');
 $obj= new AssetQuery;
 session_start();
 
-if(!isset($_SESSION['TUser'])) {
-	header("hodhome.php");
-} else {
-	header("index.php?loginhod");
+if(!isset($_SESSION['Admin']) || !isset($_SESSION['TUser'])) {
+	header("index.php?login");
 }
 
 ?>
@@ -34,104 +32,14 @@ if(!isset($_SESSION['TUser'])) {
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="navbar-brand-wrapper d-flex justify-content-center">
         <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">  
-          <h6><a href="hodhome.php">Home</a></h6>
+          <h6><a href="hodhome.php">Admin</a></h6>
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
             <span class="mdi mdi-sort-variant"></span>
           </button>
         </div>  
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul class="navbar-nav mr-lg-4 w-100">
-          <h3>Asset Management Information System</h3>
-        </ul>
-        <ul class="navbar-nav navbar-nav-right">
-
-          <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <span class="nav-profile-name">Loggedin as <?php echo $_SESSION['Username']; ?></span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="mdi mdi-settings text-primary"></i>
-                View profile
-              </a>
-              <a class="dropdown-item" href="hodhome.php?logout">
-                <i class="mdi mdi-logout text-primary"></i>
-                Logout
-              </a>
-			  
-			  <?php
-			  if(isset($_GET['logout'])) {
-				  session_destroy();
-				  header("Location:index.php?loginhod");
-			  }
-			  ?>
-            </div>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="mdi mdi-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-
-          
-          <li class="nav-item">
-            <a class="nav-link" href="hod_add.php?addlab">
-              <i class="mdi mdi-laptop menu-icon"></i>
-              <span class="menu-title">Register New Lab</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="hod_add.php">
-              <i class="mdi mdi-account-check menu-icon"></i>
-              <span class="menu-title">Register Lab.Tech</span>
-            </a>
-          </li>
-
-
-          <li class="nav-item">
-            <a class="nav-link" href="view_assets.php">
-              <i class="mdi mdi-table-column-plus-before menu-icon"></i>
-              <span class="menu-title">View all assets</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#editprofile" aria-expanded="false" aria-controls="editprofile">
-              <i class="mdi mdi-book-multiple-variant menu-icon"></i>
-              <span class="menu-title">View Labs info</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="editprofile">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 1</a></li>
-                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 2</a></li>
-                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 3</a></li>
-                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 4</a></li>
-                <li class="nav-item"> <a class="nav-link" href="hod_view.php">Lab 5</a></li>
-              </ul>
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="hod_reports.php">
-              <i class="mdi mdi-library-books menu-icon"></i>
-              <span class="menu-title">Received Reports</span>
-            </a>
-          </li>
-        </ul>
-          
-      </nav>
-
-
-
+        <?php include('scripts/nav_admin.php'); ?>        
 
 
       <!-- Container -->
@@ -144,7 +52,7 @@ if(!isset($_SESSION['TUser'])) {
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-end flex-wrap">
                   <div class="mr-md-3 mr-xl-5">
-                    <h2>Welcome <?php echo $_SESSION['Username']; ?>,</h2>
+                    <h2>Welcome <?php echo $_SESSION['Admin']; ?>,</h2>
                     <p class="mb-md-0">In this dashboard you control info from labs</p>
                   </div>
 
@@ -170,6 +78,7 @@ if(!isset($_SESSION['TUser'])) {
                     <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                       <div class="d-flex flex-wrap justify-content-xl-between">
                         
+<!-- 
                         <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
                           <i class="mdi mdi-laptop-windows mr-3 icon-lg text-primary"></i>
                           <div class="d-flex flex-column justify-content-around">
@@ -210,6 +119,7 @@ if(!isset($_SESSION['TUser'])) {
                             <h5 class="mr-2 mb-0">349 assets</h5>
                           </div>
                         </div>
+-->
 
                       </div>
                     </div>

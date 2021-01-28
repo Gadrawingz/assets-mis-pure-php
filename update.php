@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 include ('scripts/queries_a.php');
 $obj= new AssetQuery;
 
@@ -11,7 +11,7 @@ $obj= new AssetQuery;
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>HoD Dashboard</title>
+  <title>Update Data</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
@@ -34,85 +34,8 @@ $obj= new AssetQuery;
         </div>  
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul class="navbar-nav mr-lg-4 w-100">
-          <h3>Asset Management Information System</h3>
-        </ul>
-        <ul class="navbar-nav navbar-nav-right">
 
-          <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <span class="nav-profile-name">Welcome HOD</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="mdi mdi-settings text-primary"></i>
-                View profile
-              </a>
-              <a class="dropdown-item">
-                <i class="mdi mdi-logout text-primary"></i>
-                Logout
-              </a>
-            </div>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="mdi mdi-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#reg-asset" aria-expanded="false" aria-controls="reg-asset">
-              <i class="mdi mdi-bookmark-plus-outline menu-icon"></i>
-              <span class="menu-title">Register Asset</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="reg-asset">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_ele_asset">Electronic Assets </a></li>
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_nonel_asset">Non-Electronic</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="view_assets.php">
-              <i class="mdi mdi-receipt menu-icon"></i>
-              <span class="menu-title">View assets</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="mdi mdi-folder-move menu-icon"></i>
-              <span class="menu-title">Transfer asset</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="mdi mdi-library-books menu-icon"></i>
-              <span class="menu-title">Assets Reports</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#editprofile" aria-expanded="false" aria-controls="editprofile">
-              <i class="mdi mdi-account-multiple-outline menu-icon"></i>
-              <span class="menu-title">Update profile</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="editprofile">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="">Edit profile</a></li>
-                <li class="nav-item"> <a class="nav-link" href="">Change Password</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </nav>
+        <?php include('scripts/nav_menus.php'); ?>
 
 
       <!-- Container -->
@@ -131,29 +54,22 @@ $obj= new AssetQuery;
 
 
 
-
-
-
-
-
-
-
             <?php
             // Update assets
             if(isset($_GET['uasset'])) {
 
               if(isset($_POST['updsave'])) {
-                if($obj->updateAsset($_POST['aname'], $_POST['acode'], $_POST['atype'], $_POST['dep_date'], $_GET['UID'])=='1') {
+                if($obj->updateAsset($_POST['aname'], $_POST['acode'], $_POST['atype'], $_POST['a_model'], $_GET['UID'])=='1') {
                  echo "<script>alert('ASSET IS NOT UPDATED!')</script>";
-                  echo "<script>window.location='view_assets.php'</script>";                  
+                  echo "<script>window.location='view_assets.php?a'</script>";                  
                   } else {
                     echo "<script>alert('ASSET UPDATED!')</script>";
-                  echo "<script>window.location='view_assets.php'</script>";
+                  echo "<script>window.location='view_assets.php?a'</script>";
                   
                 }
               }
 
-              $st = $obj->readAssetById($_GET['UID']);
+              $st = $obj->readOneAsset($_GET['UID']);
               $row = $st->FETCH(PDO::FETCH_ASSOC);
             ?>
             <!-- Block1 -->
@@ -175,8 +91,8 @@ $obj= new AssetQuery;
                       <input type="text" class="form-control" id="exampleInputAtype" value="<?php echo $row['a_type'];?>" name="atype">
                     </div>
                     <div class="form-group">
-                      <label for="exampleInputDate">Depreciation Date</label>
-                      <input type="text" class="form-control" id="exampleInputDate" value="<?php echo $row['a_depreciation'];?>" name="dep_date">
+                      <label for="exampleInputDate">Asset Model</label>
+                      <input type="text" class="form-control" id="exampleInputDate" value="<?php echo $row['a_model'];?>" name="a_model">
                     </div>
                   
                     <button type="submit" class="btn btn-primary mr-4" name="updsave">Save</button>
@@ -187,6 +103,70 @@ $obj= new AssetQuery;
             </div>
             <?php } ?>
             <!-- Block1 X -->
+
+
+
+
+
+            <?php
+            // Update assets
+            if(isset($_GET['UUID'])) {
+
+              if(isset($_POST['update2'])) {
+                if($obj->updateUser($_POST['unames'], $_POST['u_username'], $_POST['u_phone'], $_POST['u_email'], $_POST['upass'], $_GET['UUID'])) {
+
+                 echo "<script>alert('USER IS NOT UPDATED!')</script>";
+                  echo "<script>window.location='profile.php'</script>";                  
+                  } else {
+                    echo "<script>alert('USER UPDATED!')</script>";
+                    echo "<script>window.location='profile.php'</script>";
+                  
+                }
+              }
+
+              $st2 = $obj->readOneUser($_GET['UUID']);
+              $row2 = $st2->FETCH(PDO::FETCH_ASSOC);
+            ?>
+            <!-- Block1 -->
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update User</h4>
+                  <form class="forms-sample" method="POST">
+                    <div class="form-group">
+                      <label for="exampleInputNames">Full Names</label>
+                      <input type="text" class="form-control" id="exampleInputNames" value="<?php echo $row2['u_names'];?>" name="unames">
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputUn">Username</label>
+                      <input type="text" class="form-control" id="exampleInputUn" name="u_username" value="<?php echo $row2['u_username'];?>">
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputP">Phone Number</label>
+                      <input type="text" class="form-control" id="exampleInputP" value="<?php echo $row2['u_phone'];?>" name="u_phone">
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputUe">Email Address</label>
+                      <input type="text" class="form-control" id="exampleInputUe" value="<?php echo $row2['u_email'];?>" name="u_email">
+                    </div>
+ 
+                    <div class="form-group">
+                      <label for="exampleInputPw">Password</label>
+                      <input type="password" class="form-control" id="exampleInputPw" value="<?php echo $row2['u_password'];?>" name="upass">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mr-4" name="update2">Update</button>
+                    <button class="btn btn-danger">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <?php } ?>
+            <!-- Block1 X -->
+
+
+
+
 
 
 

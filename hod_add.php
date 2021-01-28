@@ -1,3 +1,10 @@
+<?php
+session_start();
+
+include ('scripts/queries_a.php');
+$obj= new AssetQuery;
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,86 +36,8 @@
         </div>  
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul class="navbar-nav mr-lg-4 w-100">
-          <h3>Asset Management Information System</h3>
-        </ul>
-        <ul class="navbar-nav navbar-nav-right">
 
-          <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <span class="nav-profile-name">Welcome HOD</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="mdi mdi-settings text-primary"></i>
-                View profile
-              </a>
-              <a class="dropdown-item">
-                <i class="mdi mdi-logout text-primary"></i>
-                Logout
-              </a>
-            </div>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="mdi mdi-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
-      <!-- -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#reg-asset" aria-expanded="false" aria-controls="reg-asset">
-              <i class="mdi mdi-bookmark-plus-outline menu-icon"></i>
-              <span class="menu-title">Register Asset</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="reg-asset">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_ele_asset">Electronic Assets </a></li>
-                <li class="nav-item"> <a class="nav-link" href="addnew.php?add_nonel_asset">Non-Electronic</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="view_assets.php">
-              <i class="mdi mdi-receipt menu-icon"></i>
-              <span class="menu-title">View assets</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="mdi mdi-folder-move menu-icon"></i>
-              <span class="menu-title">Transfer asset</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="mdi mdi-library-books menu-icon"></i>
-              <span class="menu-title">Assets Reports</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#editprofile" aria-expanded="false" aria-controls="editprofile">
-              <i class="mdi mdi-account-multiple-outline menu-icon"></i>
-              <span class="menu-title">Update profile</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="editprofile">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="">Edit profile</a></li>
-                <li class="nav-item"> <a class="nav-link" href="">Change Password</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </nav>
-
+      <?php include('scripts/nav_admin.php'); ?>
 
       <!-- Container -->
       <div class="main-panel">        
@@ -116,87 +45,62 @@
           <div class="row">
 
 
-            <?php 
 
-            if(isset($_GET['add_ele_asset'])) { // for isset=GET  
-              if(isset($_POST['savelab'])) {
-                if($obj->addNewLab($_POST['lab_name'], $_POST['lab_id']) =='1') {
-                  echo "<script>alert('NEW LAB IS REGISTERED!')</script>";
-                  echo "<script>window.location='hodhome.php'</script>";
-                } else {
-                  echo "<center>Failed to add!</center>";
-                }
-              } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- Block Xa -->
+            <?php if(isset($_GET['labnew'])) { 
+
+              if(isset($_POST['save_lab'])) {
+                if($obj->addLab($_POST['lab_name'], $_POST['labdesc'])==1) {
+
+                echo "<script>alert('NEW LAB IS NOT ADDED!')</script>";
+                echo "<script>window.location='hod_add.php?labnew'</script>";
+              } else {
+                echo "<script>alert('LAB IS ADDED!')</script>";
+                echo "<script>window.location='hod_add.php?labnew'</script>";
+              }
+            }
+
             ?>
 
-            <!-- Block1 -->
             <div class="col-12 grid-margin">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Register Electronic asset</h4>
-                  <form class="form-sample">
+                  <h4 class="card-title">Register new Lab</h4>
+                  <form class="form-sample" method="POST">
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Name</label>
+                          <label class="col-sm-3 col-form-label">Lab Name</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="lab_name" placeholder="Lab name" />
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Code</label>
+                          <label class="col-sm-3 col-form-label">Lab description</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="labdesc" placeholder="Lab description" />
                           </div>
                         </div>
                       </div>
+
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Status</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Active</option>
-                              <option>Inactive</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Which Lab</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Lab 1</option>
-                              <option>Lab 2</option>
-                              <option>Lab 3</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Save</button>
+
+                    <button type="submit" class="btn btn-primary mb-2" name="save_lab">Add</button>
                   </form>
                 </div>
               </div>
@@ -206,81 +110,131 @@
 
 
 
-            <!-- Block1 -->
-            <?php if(isset($_GET['add_nonel_asset'])) { ?>
+
+
+
+
+
+
+
+
+            <!-- Block T -->
+            <?php if(isset($_GET['technew'])) { 
+
+              if(isset($_POST['save_tech'])) {
+                if($obj->addUser($_POST['u_names'], $_POST['u_username'], $_POST['u_phone'], $_POST['u_email'], $_POST['u_pass'], $_POST['lab'])==1) {
+
+                echo "<script>alert('NEW TECH IS NOT ADDED!')</script>";
+                echo "<script>window.location='hod_add.php?technew'</script>";
+              } else {
+                echo "<script>alert('TECHNICIAN IS ADDED!')</script>";
+                echo "<script>window.location='hod_add.php?technew'</script>";
+              }
+            }
+
+            ?>
+
             <div class="col-12 grid-margin">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Register non-electronic asset</h4>
-                  <form class="form-sample">
+                  <h4 class="card-title">Register new technician</h4>
+                  <form class="form-sample" method="POST">
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Name</label>
+                          <label class="col-sm-3 col-form-label">Tech Names</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="u_names" placeholder="Technician name" />
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Asset Code</label>
+                          <label class="col-sm-3 col-form-label">Username</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" name="u_username" placeholder="Username" />
                           </div>
                         </div>
                       </div>
                     </div>
+
+
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Status</label>
+                          <label class="col-sm-3 col-form-label">Phone Number</label>
                           <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Active</option>
-                              <option>Inactive</option>
+                            <input type="text" class="form-control" name="u_phone" placeholder="Phone Number" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Email address</label>
+                          <div class="col-sm-9">
+                            <input type="email" class="form-control" name="u_email" placeholder="Email address" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Password</label>
+                          <div class="col-sm-9">
+                            <input type="password" class="form-control" name="u_pass" placeholder="Password" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Assign Lab</label>
+                          <div class="col-sm-9">
+                            <select class="form-control" id="selectFrom" name="lab">
+                              <?php
+                              $stmt= $obj->readLabs();
+                              while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
+                              ?>
+
+                              <option value="<?php echo $row['lab_id'];?>"><?php echo $row['lab_name']; ?></option>
+                              <?php } ?>
                             </select>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Which Lab</label>
-                          <div class="col-sm-9">
-                            <select class="form-control">
-                              <option>Lab 1</option>
-                              <option>Lab 2</option>
-                              <option>Lab 3</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Some Date</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" placeholder="dd/mm/yyyy"/>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-2">Save</button>
+
+
+                    <button type="submit" class="btn btn-primary mb-2" name="save_tech">Save</button>
                   </form>
                 </div>
               </div>
             </div>
-            <!-- Block 2X -->
-          <?php } ?>
+            <?php } ?>
+            <!-- Block T-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
