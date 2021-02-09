@@ -97,6 +97,11 @@ if(!isset($_SESSION['TUser'])) {
             if(isset($_GET['transfer'])) {
 
               if(isset($_POST['transbtn'])) {
+
+                $stmtt= $obj->readOneAsset($_POST['a_id']);
+                $rowt= $stmtt->FETCH(PDO::FETCH_ASSOC);
+                $obj->add_to_transfer($_POST['a_id'], $rowt['a_location'], $_POST['transfer_to']);
+
                 if($obj->transferAsset($_POST['a_id'], $_POST['transfer_to'])) {
               
                 echo "<script>alert('ASSET IS NOT TRANSFERED!')</script>";
@@ -124,10 +129,10 @@ if(!isset($_SESSION['TUser'])) {
                           <div class="col-sm-9">
                             <select class="form-control" id="selectFrom" name="a_id">
                               <?php
-                              $stmt= $obj->readAsset();
+                              $stmt= $obj->readAssetLoc($_SESSION['TLab']);
                               while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
                               ?>
-                              <option value="<?php echo $row['a_id'];?>"><?php echo $row['a_name'];?></option>
+                              <option value="<?php echo $row['a_id'];?>"><?php echo $row['a_name'];?>(<?php echo $row['a_code'];?>)</option>
                             <?php } ?>
                             </select>
                           </div>
@@ -139,7 +144,7 @@ if(!isset($_SESSION['TUser'])) {
                           <div class="col-sm-9">
                       <select class="form-control" id="selectFrom" name="transfer_to">
                       <?php
-                      $stmt2= $obj->readLabs();
+                      $stmt2= $obj->validate_borrow_transfer_loc($_SESSION['TLab']);
                       while($torow= $stmt2->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
                         <option value="<?php echo $torow['lab_id'];?>"><?php echo $torow['lab_name'];?></option>
@@ -163,7 +168,7 @@ if(!isset($_SESSION['TUser'])) {
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label"></label>
                           <div class="col-sm-9">
-                            <a href="view_assets.php?a" class="btn btn-success mr-8">Back</a>
+                            <a href="techhome.php?a" class="btn btn-success mr-8">Back</a>
                           </div>
                         </div>
                       </div>
@@ -195,13 +200,13 @@ if(!isset($_SESSION['TUser'])) {
 
                 $stmtv= $obj->readOneAsset($_POST['a_id']);
                 $rowv= $stmtv->FETCH(PDO::FETCH_ASSOC);
-                
-                if($obj->addBorrowed($_POST['a_id'], $rowv['a_location'], $_POST['transfer_to'])) {
-                  echo "<script>alert('ASSET IS NOT BORROWED!')</script>";
-                  echo "<script>window.location='techhome.php'</script>";
-                  } else {
+                if($obj->check4_availability($_POST['a_id'])<'1') {
+                $obj->addBorrowed($_POST['a_id'], $rowv['a_location'], $_POST['transfer_to'], $_POST['bor_period']);
                   echo "<script>alert('ASSET IS BORROWED!')</script>";
-                  echo "<script>window.location='techhome.php'</script>";
+                  //echo "<script>window.location='techhome.php'</script>";
+                  } else {
+                  echo "<script>alert('ASSET CAN\'T BE BORROWED!')</script>";
+                  //echo "<script>window.location='techhome.php'</script>";
                 }
               }
             ?>
@@ -211,7 +216,7 @@ if(!isset($_SESSION['TUser'])) {
               <div class="card">
                 <div class="card-body">
 
-                  <h2 class="card-title">Borrow asset</h2>
+                  <h2 class="card-title">Borrow asset <?php echo $_SESSION['TLab'];?></h2>
                   <form class="form-sample" method="POST">
                     <div class="row">
                       <div class="col-md-6">
@@ -220,10 +225,25 @@ if(!isset($_SESSION['TUser'])) {
                           <div class="col-sm-9">
                             <select class="form-control" id="selectFrom" name="a_id">
                               <?php
-                              $stmt= $obj->readAsset();
-                              while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
+							  
+                              $stmt= $obj->readAssetLoc($_SESSION['TLab']);
+                              while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) {
+							  ?>
+							  
+                              <option value="<?php echo $row['a_id'];?>">
+							  
+							  <?php
+							    $st0= $obj->readOneAsset($row['a_id']);
+                                $row0= $st0->FETCH(PDO::FETCH_ASSOC);
+                                if($obj->check4_availability($row0['a_id'])>='1') {
+                                echo $row['a_name']." (".$row['a_code'].")"."<span style='color: red!important;'>(Borrowed)</span>";
+                                } else {
+                                echo $row['a_name']." (".$row['a_code'].")"."<span style='color: green!important;'>Available</span>";
+								}
                               ?>
-                              <option value="<?php echo $row['a_id'];?>"><?php echo $row['a_name'];?></option>
+							  
+							  
+							  </option>
                             <?php } ?>
                             </select>
                           </div>
@@ -235,7 +255,7 @@ if(!isset($_SESSION['TUser'])) {
                           <div class="col-sm-9">
                       <select class="form-control" id="selectFrom" name="transfer_to">
                       <?php
-                      $stmt2= $obj->readLabs();
+                      $stmt2= $obj->validate_borrow_transfer_loc($_SESSION['TLab']);
                       while($torow= $stmt2->FETCH(PDO::FETCH_ASSOC)){ 
                       ?>
                         <option value="<?php echo $torow['lab_id'];?>"><?php echo $torow['lab_name'];?></option>
@@ -249,9 +269,27 @@ if(!isset($_SESSION['TUser'])) {
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label"></label>
+                          <label class="col-sm-3 col-form-label">Borrow period</label>
                           <div class="col-sm-9">
-                            <button type="submit" class="btn btn-primary mr-4" name="borrowbtn">Borrow</button>
+                            <select class="form-control" id="borp" name="bor_period">
+                              <option value="1 day">1 day</option>
+                              <option value="2 days">2 days</option>
+                              <option value="3 days">3 days</option>
+                              <option value="4 days">4 days</option>
+                              <option value="5 days">5 days</option>
+                              <option value="6 days">6 days</option>
+                              <option value="1 week">1 week</option>
+                              <option value="2 weeks">2 weeks</option>
+                              <option value="3 weeks">3 weeks</option>
+                              <option value="4 weeks">4 weeks</option>
+                              <option value="1 month">1 month</option>
+                              <option value="2 months">2 months</option>
+                              <option value="3 months">3 months</option>
+                              <option value="4 months">4 months</option>
+                              <option value="5 months">5 months</option>
+                              <option value="6 months">6 months</option>
+                              <option value="1 year">1 year</option>
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -259,7 +297,7 @@ if(!isset($_SESSION['TUser'])) {
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label"></label>
                           <div class="col-sm-9">
-                            <a href="view_assets.php?vborrow" class="btn btn-success mr-8">View borrowed</a>
+                            <button type="submit" class="btn btn-primary mr-4" name="borrowbtn">Borrow</button>
                           </div>
                         </div>
                       </div>

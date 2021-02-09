@@ -47,14 +47,14 @@ if(isset($_POST['hlogin'])) {
                     <div class="form-group row">
                         <label for="exampleInputEmail" class="col-sm-3 col-form-label">Email</label>
                       <div class="col-sm-9">
-                        <input type="text" class="form-control" id="exampleInputEmail" placeholder="Email">
+                        <input type="text" class="form-control" id="exampleInputEmail" placeholder="Email"protected>
                       </div>
                     </div>
 
                     <div class="form-group row">
                       <label for="exampleInputPassword2" class="col-sm-3 col-form-label">Password</label>
                       <div class="col-sm-9">
-                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password">
+                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" protected>
                       </div>
                     </div>
                     

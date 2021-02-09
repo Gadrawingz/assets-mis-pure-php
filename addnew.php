@@ -3,6 +3,7 @@ session_start();
 
 include ('scripts/queries_a.php');
 $obj= new AssetQuery;
+$locat = $_SESSION['TLab'];
 
 ?>
 
@@ -49,14 +50,18 @@ $obj= new AssetQuery;
             <?php if(isset($_GET['assetnew'])) { 
 
               if(isset($_POST['save_asset'])) {
-                if($obj->addAsset($_POST['asset_name'], $_POST['asset_code'], $_POST['asset_type'], $_POST['model_name'], $_SESSION['TLab'], $_POST['asset_status'], $_POST['asset_condition'])==1) {
-
+				  if($obj->validate_assettbl($_POST['asset_code'])<1) {
+				  if($obj->addAsset($_POST['asset_name'], $_POST['asset_code'], $_POST['asset_type'], $_POST['model_name'], $_SESSION['TLab'], $_POST['asset_status'], $_POST['asset_condition'])==1) {
+					
                 echo "<script>alert('ASSET NOT ADDED!')</script>";
                 echo "<script>window.location='addnew.php?assetnew'</script>";
               } else {
                 echo "<script>alert('ASSET IS ADDED!')</script>";
                 echo "<script>window.location='addnew.php?assetnew'</script>";
-              }
+				}} else {
+				echo "<script>alert('ASSET CODE HAS BEEN USED!')</script>";
+                echo "<script>window.location='addnew.php?assetnew'</script>";
+				}
             }
 
             ?>
@@ -71,7 +76,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Name</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="asset_name"/>
+                            <input type="text" class="form-control" name="asset_name" required>
                           </div>
                         </div>
                       </div>
@@ -79,7 +84,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Code</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="asset_code"/>
+                            <input type="text" class="form-control" name="asset_code" required/>
                           </div>
                         </div>
                       </div>
@@ -90,7 +95,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Type</label>
                           <div class="col-sm-9">
-                            <select name="asset_type" class="form-control">
+                            <select name="asset_type" class="form-control" required>
                               <?php
                               $stmt5= $obj->readCategories();
                               while($row5= $stmt5->FETCH(PDO::FETCH_ASSOC)) { 
@@ -109,7 +114,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Model</label>
                           <div class="col-sm-9">
-                            <select class="form-control" name="model_name">
+                            <select class="form-control" name="model_name" required>
                               <?php
                               $stmt6= $obj->readModels();
                               while($row6= $stmt6->FETCH(PDO::FETCH_ASSOC)) { 
@@ -128,20 +133,39 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Status</label>
                           <div class="col-sm-9">
-                            <select class="form-control" name="asset_status">
+                            <select class="form-control" name="asset_status" onchange="showInactiveOptions()" required>
                               <option value="Active">Active</option>
                               <option value="Not Active">Not Active</option>
                             </select>
                           </div>
                         </div>
                       </div>
+
+
+          
             
                       <div class="col-md-6">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Asset Condition</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="asset_condition">
+                            <select name="asset_condition" class="form-control">
+                              
+                              <script type="text/javascript">
+                                /*function showInactiveOptions() {
+                                  if(this.value==='Not Active') { 
+                                    alert('Good');
+                                  } else {
+                                    alert('Nope');
+                                  }
+                                }*/
+                              </script>
+                              <option value="Bad">Bad</option>
+                              <option value="Good">Good</option>
+                              <option value="Repairable">Repairable</option>
+                              <option value="Not Repairable">Not Repairable</option>
+                            </select>
                           </div>
+					
                         </div>
                       </div>
                     </div>
@@ -196,7 +220,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Lab Name</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="lab_name" placeholder="Lab name" />
+                            <input type="text" class="form-control" name="lab_name" placeholder="Lab name" required/>
                           </div>
                         </div>
                       </div>
@@ -239,6 +263,7 @@ $obj= new AssetQuery;
             <!-- Block 2 -->
             <?php if(isset($_GET['modelnew'])) { 
               if(isset($_POST['save_model'])) {
+				if($obj->validate_models($_POST['model_name'])<1) {
                 if($obj->addModel($_POST['model_name'])==1) {
 
                 echo "<script>alert('NEW MODEL IS NOT ADDED!')</script>";
@@ -246,7 +271,10 @@ $obj= new AssetQuery;
               } else {
                 echo "<script>alert('MODEL IS ADDED!')</script>";
                 echo "<script>window.location='addnew.php?modelnew'</script>";
-              }
+				}} else {
+                echo "<script>alert('THAT MODEL NAME EXISTS!')</script>";
+                echo "<script>window.location='addnew.php?modelnew'</script>";				
+				}
             }
 
             ?>
@@ -319,6 +347,7 @@ $obj= new AssetQuery;
             <!-- Block 3 -->
             <?php if(isset($_GET['catnew'])) { 
               if(isset($_POST['save_cat'])) {
+				if($obj->validate_category($_POST['cat_type'])<1) {
                 if($obj->addCategory($_POST['cat_type'])==1) {
 
                 echo "<script>alert('NEW CATEGORY IS NOT ADDED!')</script>";
@@ -327,7 +356,10 @@ $obj= new AssetQuery;
                 echo "<script>alert('CATEGORY IS ADDED!')</script>";
                 echo "<script>window.location='addnew.php?catnew'</script>";
               }
-            }
+            } else {
+				echo "<script>alert('CATEGORY ALREADY EXISTS!')</script>";
+                echo "<script>window.location='addnew.php?catnew'</script>";			
+			  }}
 
             ?>
 

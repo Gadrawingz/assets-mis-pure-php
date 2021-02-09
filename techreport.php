@@ -192,15 +192,164 @@ $locat = $_SESSION['TLab'];
                     </table>
 
 
+
                   </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <!---####---->
+          <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Assets | <a href="techreport.php?Good&condition">Good</a> | <a href="techreport.php?Bad&condition">Bad</a></h4>
+                <?php if(isset($_GET['condition']) ) { ?>
+                  <div class="table-responsive">
+                    <table class="table bordered table-dark">
+                      <thead>
+                        <tr>
+                          <th>Asset ID</th>
+                          <th>Asset Name</th>
+                          <th>Asset Code</th>
+                          <th>Asset Type</th>
+                          <th>Asset Model</th>
+                        </tr>
+                      </thead>
+
+                      <?php
+                      if(isset($_GET['Good'])) {
+                        $stmt= $assobj->read_good_cond_asset($locat);
+                      } if(isset($_GET['Bad'])){
+                        $stmt= $assobj->read_bad_cond_asset($locat);
+                      }
+
+                      while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
+                      ?>
+            
+                      <tbody>
+                        <tr>
+                          <td><?php echo $row['a_id'];?></td>
+                          <td><?php echo $row['a_name'];?></td>
+                          <td><?php echo $row['a_code'];?></td>
+                          <td>
+                            <?php
+                            $stmt7= $assobj->readOneAType($row['a_type']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            echo $row7['cat_type'];
+                            ?>
+                          </td>
+
+                          <td>
+                            <?php
+                            $stmt8= $assobj->readOneModel($row['a_model']);
+                            $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
+                            echo $row8['m_name'];
+                            ?>
+                          </td>                          
+                        </tr>
+                      <?php } ?>
+                      </tbody>
+
+                      <tfoot>
+                        <tr>
+                          <td colspan="5"><center><button class="txt-center btn btn-warning btn-rounded btn-fw">Print Report</button></center></td>
+                        </tr>
+                      </tfoot>
+
+                    </table>
+                  </div>
+                <?php } ?>
                 </div>
 
 
 
 
+              <div class="card-body">
+                <h4 class="card-title">All assets | <a href="techreport.php?Active&status">Active</a> | <a href="techreport.php?Inactive&status">Inactive</a></h4>
+
+                <?php if(isset($_GET['status']) ) { ?>
+                  <div class="table-responsive">
+                    <table class="table bordered table-dark">
+                      <thead>
+                        <tr>
+                          <th>Asset ID</th>
+                          <th>Asset Name</th>
+                          <th>Asset Code</th>
+                          <th>Asset Type</th>
+                          <th>Asset Model</th>
+                        </tr>
+                      </thead>
+
+                      <?php
+                    
+                      if(isset($_GET['Active']) ) {
+                        $stmt= $assobj->readAssetIsActive($locat);
+                      } if(isset($_GET['Inactive'])){
+                        $stmt= $assobj->readAssetIsInactive($locat);
+                      }
+
+                      while($row= $stmt->FETCH(PDO::FETCH_ASSOC)){ 
+                      ?>
+            
+                      <tbody>
+                        <tr>
+                          <td><?php echo $row['a_id'];?></td>
+                          <td><?php echo $row['a_name'];?></td>
+                          <td><?php echo $row['a_code'];?></td>
+                          <td>
+                            <?php
+                            $stmt7= $assobj->readOneAType($row['a_type']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            echo $row7['cat_type'];
+                            ?>
+                          </td>
+
+                          <td>
+                            <?php
+                            $stmt8= $assobj->readOneModel($row['a_model']);
+                            $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
+                            echo $row8['m_name'];
+                            ?>
+                          </td>                          
+                        </tr>
+                      <?php } ?>
+                      </tbody>
+
+                      <tfoot>
+                        <tr>
+                          <td colspan="5"><center><button class="txt-center btn btn-success btn-rounded btn-fw">Print Report</button></center></td>
+                        </tr>
+                      </tfoot>
+
+                    </table>
+                  </div>
+                <?php } ?>
+                </div>
+              </div>
+            </div>
+            <!---####---->
 
 
 
+
+
+
+
+
+
+
+
+
+                </div>
 
 
 

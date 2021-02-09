@@ -87,35 +87,33 @@ $obj= new AssetQuery;
 				<?php if(isset($_GET['login'])) { 
 
           if(isset($_POST['btnlogin'])) {
-            $stmt = $obj->userLogin($_POST['u_email'], $_POST['u_type'], $_POST['u_pass']);
+            $stmt = $obj->userLogin($_POST['u_email'], $_POST['u_pass']);
             $row = $stmt->FETCH(PDO::FETCH_ASSOC);
 
 
-            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $_POST['u_type']==$row['user_type'] && $_POST['u_type']=='Admin') {
-
+            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $row['user_type']=='Admin') {
                 $_SESSION['Admin'] = $row['u_names'];
                 $_SESSION['u_id'] = $row['u_id'];
                 header("Location: hodhome.php?welcome");
               } else {
               echo "<script>alert('USERNAME AND PASSWORD ARE NOT MATCHING')</script>";
 
-              echo "<script>window.location='index.php?login'</script>";       
+              //echo "<script>window.location='index.php?login'</script>";       
             }
 
 
-            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $_POST['u_type']==$row['user_type'] && $_POST['u_type']=='LabTech') {
-
+            if($_POST['u_email']==$row['u_email'] && $_POST['u_pass']==$row['u_password'] && $row['user_type']=='LabTech') {
                 // Checking labx
                 $stmt5 = $obj->readOneLab($row['u_id']);
                 $row5 = $stmt5->FETCH(PDO::FETCH_ASSOC);
 
                 $_SESSION['TUser'] = $row['u_names'];
                 $_SESSION['u_id'] = $row['u_id'];
-                $_SESSION['TLab'] = $row5['lab_tech'];
+                $_SESSION['TLab'] = $row5['user_for'];
                 header("Location: techhome.php?welcome");
               } else {
               echo "<script>alert('USERNAME AND PASSWORD ARE NOT MATCHING')</script>";
-              echo "<script>window.location='index.php?login'</script>";       
+              //echo "<script>window.location='index.php?login'</script>";       
             }
 
           }
@@ -134,24 +132,14 @@ $obj= new AssetQuery;
                     <div class="form-group row">
                         <label for="exampleInputUsername" class="col-sm-3 col-form-label">Email</label>
                       <div class="col-sm-9">
-                        <input type="email" class="form-control" id="exampleInputUsername" placeholder="Email address" name="u_email">
+                        <input type="email" class="form-control" id="exampleInputUsername" placeholder="Email address" name="u_email"required>
                       </div>
-                    </div>
-
-                    <div class="form-group row">
-                      <label for="exampleFormControlSelect" class="col-sm-3 col-form-label">User type</label>
-                      <div class="col-sm-9">
-                        <select class="form-control" id="selectFrom" name="u_type">
-                          <option value="Admin">Admin</option>
-                          <option value="LabTech">LabTech</option>
-                        </select>
-                    </div>
                     </div>
 
                     <div class="form-group row">
                       <label for="exampleInputPassword2" class="col-sm-3 col-form-label">Password</label>
                       <div class="col-sm-9">
-                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="u_pass">
+                        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password" name="u_pass"required>
                       </div>
                     </div>
                     
@@ -166,7 +154,11 @@ $obj= new AssetQuery;
                           Keep me signed in
                         </label>
                       </div>
-                      <a href="forgotpass.php" class="auth-link text-black">Forgot password?</a>
+					  <?php if($obj->countAdmins() < 1) { ?>
+                      <a href="add_admin.php" class="auth-link text-black">Create account</a>
+					  <?php } else { ?>
+					  <a href="forgotpass.php" class="auth-link text-black">Forgot password</a>
+					  <?php } ?>
                     </div>
                   </form>
                 </div>

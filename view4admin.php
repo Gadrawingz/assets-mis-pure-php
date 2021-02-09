@@ -6,6 +6,7 @@ $locat = $_SESSION['Admin'];
 ?>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,6 +20,7 @@ $locat = $_SESSION['Admin'];
   <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
 
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/newstyles.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
 </head>
@@ -54,14 +56,15 @@ $locat = $_SESSION['Admin'];
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
-                          <th>Asset ID</th>
+                          <th>ID</th>
                           <th>Asset Name</th>
                           <th>Asset Code</th>
                           <th>Asset Type</th>
                           <th>Asset Model</th>
+                          <th class="availability-th">Availability</th>
                           <th>Status</th>
                           <th>Condition</th>
-                          <th colspan="2" style="text-align: center;">Action</th>
+                          
                         </tr>
                       </thead>
 
@@ -89,12 +92,24 @@ $locat = $_SESSION['Admin'];
                             $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
                             echo $row8['m_name'];
                             ?>
-                          </td>                          
+                          </td> 
+
+                          <td class="availability-td">
+                            <?php
+                            $st0= $assobj->readOneAsset($row['a_id']);
+                            $row0= $st0->FETCH(PDO::FETCH_ASSOC);
+                            if($assobj->check4_availability($row0['a_id'])>='1') {
+                              echo "Borrowed";
+                            } else {
+                              echo "Available";
+                            }
+                            ?>
+                          </td>
+
                           <td><?php echo $row['a_status'];?></td>
                           <td><?php echo $row['a_condition'];?></td>
                           <td></td>
-                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
-                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view_assets.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
+                         
                         </tr>
                       <?php } ?>
                       </tbody>
@@ -128,20 +143,26 @@ $locat = $_SESSION['Admin'];
           <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">All information about Lab <?php echo $_GET['labinfo']; ?></h4>
+                <h4 class="card-title">All information about
+				<?php 
+				
+				$st3= $assobj->read_lab_ch_id($_GET['labinfo']);
+                $row0= $st3->FETCH(PDO::FETCH_ASSOC);
+				echo "<span style='color:orange;'>".$row0['lab_name']."</span>"; 
+				?></h4>
                   <div class="table-responsive">
                     <table class="table bordered table-striped">
                       <thead>
                         <tr>
-                          <th>Asset ID</th>
+                          <th>ID</th>
                           <th>Asset Name</th>
                           <th>Asset Code</th>
                           <th>Asset Type</th>
-                          <th>Location</th>
                           <th>Asset Model</th>
+                          <th>Location</th>
+                          <th class="availability-th">Availability</th>
                           <th>Status</th>
                           <th>Condition</th>
-                          <th colspan="2" style="text-align: center;">Action</th>
                         </tr>
                       </thead>
 
@@ -163,20 +184,30 @@ $locat = $_SESSION['Admin'];
                             echo $row7['cat_type'];
                             ?>
                           </td>
-                          <td>Lab #<?php echo $row['a_location']; ?></td>
-
                           <td>
                             <?php
                             $stmt8= $assobj->readOneModel($row['a_model']);
                             $row8= $stmt8->FETCH(PDO::FETCH_ASSOC);
                             echo $row8['m_name'];
                             ?>
-                          </td>                          
+                          </td>
+                          <td>Lab #<?php echo $row['a_location']; ?></td>
+                          <td class="availability-td">
+                            <?php
+                            $st0= $assobj->readOneAsset($row['a_id']);
+                            $row0= $st0->FETCH(PDO::FETCH_ASSOC);
+                            if($assobj->check4_availability($row0['a_id'])>='1') {
+                              echo "Borrowed";
+                            } else {
+                              echo "Available";
+                            }
+                            ?>
+
+                            </td>                         
                           <td><?php echo $row['a_status'];?></td>
                           <td><?php echo $row['a_condition'];?></td>
                           <td></td>
-                          <td><a class="btn btn-block btn-primary btn-sm font-weight-small auth-form-btn" href="update.php?UID=<?php echo $row['a_id'];?>&uasset">Update</a></td>
-                          <td><a class="btn btn-block btn-danger btn-sm font-weight-small auth-form-btn" href="view_assets.php?DID=<?php echo $row['a_id'];?>">Delete</a></td>
+
                         </tr>
                       <?php } ?>
                         <?php

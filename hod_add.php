@@ -121,17 +121,22 @@ $obj= new AssetQuery;
             <!-- Block T -->
             <?php if(isset($_GET['technew'])) { 
 
-              if(isset($_POST['save_tech'])) {
+			
+			  if(isset($_POST['save_tech']) && empty($_POST['lab'])){
+				echo "<script>alert('INVALID PLEASE!')</script>";
+                echo "<script>window.location='hod_add.php?technew'</script>";
+              } 
+			  
+              if(isset($_POST['save_tech']) && !empty($_POST['lab'])) {			
                 if($obj->addUser($_POST['u_names'], $_POST['u_username'], $_POST['u_phone'], $_POST['u_email'], $_POST['u_pass'], $_POST['lab'])==1) {
 
-                echo "<script>alert('NEW TECH IS NOT ADDED!')</script>";
+                echo "<script>alert('NEW TECH IS NOT ADDED OR INVALID!')</script>";
                 echo "<script>window.location='hod_add.php?technew'</script>";
               } else {
-                echo "<script>alert('TECHNICIAN IS ADDED!')</script>";
+				echo "<script>alert('TECHNICIAN IS ADDED!')</script>";
                 echo "<script>window.location='hod_add.php?technew'</script>";
-              }
-            }
-
+			  }
+			  }
             ?>
 
             <div class="col-12 grid-margin">
@@ -144,7 +149,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Tech Names</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="u_names" placeholder="Technician name" />
+                            <input type="text" class="form-control" name="u_names" placeholder="Technician name" required/>
                           </div>
                         </div>
                       </div>
@@ -152,7 +157,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Username</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="u_username" placeholder="Username" />
+                            <input type="text" class="form-control" name="u_username" placeholder="Username" required/>
                           </div>
                         </div>
                       </div>
@@ -164,7 +169,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Phone Number</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" name="u_phone" placeholder="Phone Number" />
+                            <input type="text" class="form-control" name="u_phone" placeholder="Phone Number" required/>
                           </div>
                         </div>
                       </div>
@@ -173,7 +178,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Email address</label>
                           <div class="col-sm-9">
-                            <input type="email" class="form-control" name="u_email" placeholder="Email address" />
+                            <input type="email" class="form-control" name="u_email" placeholder="Email address" required/>
                           </div>
                         </div>
                       </div>
@@ -185,7 +190,7 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Password</label>
                           <div class="col-sm-9">
-                            <input type="password" class="form-control" name="u_pass" placeholder="Password" />
+                            <input type="password" class="form-control" name="u_pass" placeholder="Password" required/>
                           </div>
                         </div>
                       </div>
@@ -194,19 +199,25 @@ $obj= new AssetQuery;
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Assign Lab</label>
                           <div class="col-sm-9">
-                            <select class="form-control" id="selectFrom" name="lab">
+						  
+						<?php if($obj->count_lab_availability()+1 != $obj->count_userlab_availability()){?>
+                            <select class="form-control" id="selectFrom" name="lab" required>
                               <?php
                               $stmt= $obj->readLabs();
-                              while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) { 
+                              while($row= $stmt->FETCH(PDO::FETCH_ASSOC)) {
+								  if($obj->validate_labtech($row['lab_id'])<1) { 							  
                               ?>
-
                               <option value="<?php echo $row['lab_id'];?>"><?php echo $row['lab_name']; ?></option>
-                              <?php } ?>
+                              <?php }} ?>
                             </select>
+						<?php } else { ?>
+							<select class="form-control" id="selectFrom" name="lab" readonly>
+                              <option value="">No empty lab available</option>
+                            </select>
+						<?php } ?>
                           </div>
                         </div>
                       </div>
-
 
                     <button type="submit" class="btn btn-primary mb-2" name="save_tech">Save</button>
                   </form>

@@ -59,7 +59,7 @@ $obj= new AssetQuery;
             if(isset($_GET['uasset'])) {
 
               if(isset($_POST['updsave'])) {
-                if($obj->updateAsset($_POST['aname'], $_POST['acode'], $_POST['atype'], $_POST['a_model'], $_GET['UID'])=='1') {
+                if($obj->updateAsset($_POST['aname'], $_POST['acode'], $_POST['atype'], $_POST['a_model'], $_POST['a_condition'], $_POST['a_status'], $_GET['UID'])=='1') {
                  echo "<script>alert('ASSET IS NOT UPDATED!')</script>";
                   echo "<script>window.location='view_assets.php?a'</script>";                  
                   } else {
@@ -88,12 +88,60 @@ $obj= new AssetQuery;
                     </div>
                     <div class="form-group">
                       <label for="exampleInputAtype">Asset Type</label>
-                      <input type="text" class="form-control" id="exampleInputAtype" value="<?php echo $row['a_type'];?>" name="atype">
+                      <select name="atype" class="form-control" id="exampleInputCond"  style="border: 1px solid blue;">
+							<?php
+                            $stmt7= $obj->readOneAType($row['a_type']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            ?>                    
+                        <option value="<?php echo $row7['cat_id'];?>"><?php echo $row7['cat_type'];?></option>
+						
+							<?php
+                            $stmt7= $obj->readCategories();
+                            while($row7= $stmt7->FETCH(PDO::FETCH_ASSOC)){
+                            ?>                    
+                        <option value="<?php echo $row7['cat_id'];?>"><?php echo $row7['cat_type'];?></option>						
+							<?php } ?>
+                      </select>
+                    </div>									
+
+										  
+					
+                    <div class="form-group">
+                      <label for="exampleInputSta">Asset status</label>
+                      <input type="text" class="form-control" id="exampleInputSta" value="<?php echo $row['a_status'];?>" name="a_status" style="border: 1px solid red;" readonly>
                     </div>
+
+                    <div class="form-group">
+                      <label for="exampleInputCond">Asset condition</label>
+                      <select name="a_condition" class="form-control" id="exampleInputCond"  style="border: 1px solid blue;">
+                      <?php if ($row['a_status']=='Not Active') { ?>
+                        <option value="Repairable">Repairable</option>
+                        <option value="Unrepairable">Unrepairable</option>
+                      <?php } else { ?>
+                        <option value="Good">Good</option>
+                        <option value="Bad">Bad</option>
+                      <?php } ?>
+                      </select>
+                    </div>
+					
                     <div class="form-group">
                       <label for="exampleInputDate">Asset Model</label>
-                      <input type="text" class="form-control" id="exampleInputDate" value="<?php echo $row['a_model'];?>" name="a_model">
-                    </div>
+                      <select name="a_model" class="form-control" id="exampleInputCond"  style="border: 1px solid blue;">
+							<?php
+                            $stmt7= $obj->readOneModel($row['a_model']);
+                            $row7= $stmt7->FETCH(PDO::FETCH_ASSOC);
+                            ?>                    
+                        <option value="<?php echo $row7['m_id'];?>"><?php echo $row7['m_name'];?></option>
+						
+							<?php
+                            $stmt7= $obj->readModels();
+                            while($row7= $stmt7->FETCH(PDO::FETCH_ASSOC)){
+                            ?>                    
+                        <option value="<?php echo $row7['m_id'];?>"><?php echo $row7['m_name'];?></option>						
+							<?php } ?>
+                      </select>
+					  
+					  </div>
                   
                     <button type="submit" class="btn btn-primary mr-4" name="updsave">Save</button>
                     <button class="btn btn-danger">Cancel</button>

@@ -1,0 +1,16 @@
+
+
+# Validating borrowed table
+## example: you can borrow item multiple times
+
+#
+## Hasigaye if Item borrowed will be updated
+
+# Add on LabInfo (view full details)
+## 
+
+# During updation set real thing instead of ids/ copy from insertion
+# Add updation and deletion to each table for showing assets
+# Add Bring back stuff to (asset)
+
+# when item is unreparable can not be transerfred or borrowed
